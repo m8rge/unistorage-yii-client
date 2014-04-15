@@ -38,12 +38,13 @@ class YiiUnistorage extends \Unistorage\Unistorage
      * @param RegularFile $file
      * @param string $actionName
      * @param array $actionParams
+     * @param bool $lowPriority
      * @return File|bool
      */
-    public function safeApplyAction($file, $actionName, $actionParams = array())
+    public function safeApplyAction($file, $actionName, $actionParams = array(), $lowPriority = false)
     {
         try {
-            $file = parent::applyAction($file, $actionName, $actionParams);
+            $file = parent::applyAction($file, $actionName, $actionParams, $lowPriority);
         } catch (Exception $e) {
             Yii::log(
                 'Can\'t applyAction ' . print_r(array($file, $actionName, $actionParams), true) . $e,
@@ -58,12 +59,13 @@ class YiiUnistorage extends \Unistorage\Unistorage
     /**
      * @param RegularFile $file
      * @param Unistorage\Models\Template $template
+     * @param bool $lowPriority
      * @return File|bool
      */
-    public function safeApplyTemplate($file, $template)
+    public function safeApplyTemplate($file, $template, $lowPriority = false)
     {
         try {
-            $file = parent::applyTemplate($file, $template);
+            $file = parent::applyTemplate($file, $template, $lowPriority);
         } catch (Exception $e) {
             Yii::log(
                 'Can\'t applyTemplate ' . print_r(array($file, $template), true) . $e,
@@ -198,18 +200,19 @@ class YiiUnistorage extends \Unistorage\Unistorage
      * @param RegularFile $file
      * @param string $actionName
      * @param array $actionParams
+     * @param bool $lowPriority
      * @return File|bool
      */
-    public function applyAction($file, $actionName, $actionParams = array())
+    public function applyAction($file, $actionName, $actionParams = array(), $lowPriority = false)
     {
         $cacheKey = $this->getCacheKey(array(__FUNCTION__, $file->resourceUri, $actionName, $actionParams));
         if (!$this->useGetFileCache) {
-            $resultFile = $this->safeApplyAction($file, $actionName, $actionParams);
+            $resultFile = $this->safeApplyAction($file, $actionName, $actionParams, $lowPriority);
         } else {
             $resultFile = $this->getCachedFileOrCreateIt(
                 $cacheKey,
-                function () use ($file, $actionName, $actionParams) {
-                    return $this->safeApplyAction($file, $actionName, $actionParams);
+                function () use ($file, $actionName, $actionParams, $lowPriority) {
+                    return $this->safeApplyAction($file, $actionName, $actionParams, $lowPriority);
                 }
             );
         }
@@ -220,18 +223,19 @@ class YiiUnistorage extends \Unistorage\Unistorage
     /**
      * @param RegularFile $file
      * @param Unistorage\Models\Template $template
+     * @param bool $lowPriority
      * @return File|bool
      */
-    public function applyTemplate($file, $template)
+    public function applyTemplate($file, $template, $lowPriority = false)
     {
         $cacheKey = $this->getCacheKey(array(__FUNCTION__, $file->resourceUri, $template));
         if (!$this->useGetFileCache) {
-            $resultFile = $this->safeApplyTemplate($file, $template);
+            $resultFile = $this->safeApplyTemplate($file, $template, $lowPriority);
         } else {
             $resultFile = $this->getCachedFileOrCreateIt(
                 $cacheKey,
-                function () use ($file, $template) {
-                    return $this->safeApplyTemplate($file, $template);
+                function () use ($file, $template, $lowPriority) {
+                    return $this->safeApplyTemplate($file, $template, $lowPriority);
                 }
             );
         }
