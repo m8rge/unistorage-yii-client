@@ -154,7 +154,7 @@ class YiiUnistorage extends \Unistorage\Unistorage
             }
             if ($unistorageCache->ttl != 0 && $unistorageCache->ttl < time()) {
                 // file expired. Refreshing
-                $file = $this->refreshFile($file, $cacheKey);
+                $file = $this->refreshFile($file->resourceUri, $cacheKey);
             } elseif ($unistorageCache->ttl - time() > 0) {
                 // resetting in cache
                 Yii::app()->cache->set($cacheKey, $file, $unistorageCache->ttl - time());
@@ -189,7 +189,7 @@ class YiiUnistorage extends \Unistorage\Unistorage
             $file = $this->safeGetFile($resourceUri);
         } else {
             if (false === $file = $this->getCachedFile($cacheKey)) {
-                $file = $this->refreshFile($file, $cacheKey);
+                $file = $this->refreshFile($resourceUri, $cacheKey);
             }
         }
 
@@ -284,9 +284,14 @@ class YiiUnistorage extends \Unistorage\Unistorage
         return $file;
     }
 
-    public function refreshFile($file, $cacheKey)
+    /**
+     * @param string $resourceUri
+     * @param string $cacheKey
+     * @return bool|File
+     */
+    public function refreshFile($resourceUri, $cacheKey)
     {
-        $file = $this->safeGetFile($file->resourceUri);
+        $file = $this->safeGetFile($resourceUri);
         $this->cacheFile($file, $cacheKey);
 
         return $file;
