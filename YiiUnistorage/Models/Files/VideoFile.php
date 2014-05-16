@@ -18,7 +18,7 @@ class VideoFile extends \Unistorage\Models\Files\VideoFile
 	{
 		/** @var $unistorage \YiiUnistorage */
 		$unistorage = \Yii::app()->getComponent('unistorage');
-		return parent::convert($format, $vCodec, $aCodec, $unistorage);
+		return parent::convert($format, $vCodec, $aCodec, $lowPriority, $unistorage);
 	}
 
     /**
@@ -31,7 +31,7 @@ class VideoFile extends \Unistorage\Models\Files\VideoFile
 	{
 		/** @var $unistorage \YiiUnistorage */
 		$unistorage = \Yii::app()->getComponent('unistorage');
-		return parent::extractAudio($format, $unistorage);
+		return parent::extractAudio($format, $lowPriority, $unistorage);
 	}
 
     /**
@@ -69,6 +69,7 @@ class VideoFile extends \Unistorage\Models\Files\VideoFile
             $horizontalPadding,
             $verticalPadding,
             $corner,
+            $lowPriority,
             $unistorage
         );
     }
@@ -84,7 +85,7 @@ class VideoFile extends \Unistorage\Models\Files\VideoFile
 	{
 		/** @var $unistorage \YiiUnistorage */
 		$unistorage = \Yii::app()->getComponent('unistorage');
-		return parent::captureFrame($format, $position, $unistorage);
+		return parent::captureFrame($format, $position, $lowPriority, $unistorage);
 	}
 
     /**
@@ -97,7 +98,7 @@ class VideoFile extends \Unistorage\Models\Files\VideoFile
 	{
 		/** @var $unistorage \YiiUnistorage */
 		$unistorage = \Yii::app()->getComponent('unistorage');
-		return parent::apply($template, $unistorage);
+		return parent::apply($template, $lowPriority, $unistorage);
 	}
 
     /**
